@@ -51,3 +51,127 @@ num1 和num2 都不包含任何前导零。
 
 1. 循环跳出条件
 2. 巧妙利用0占位
+
+
+
+# [491. 递增子序列](https://leetcode-cn.com/problems/increasing-subsequences/)
+
+给定一个整型数组, 你的任务是找到所有该数组的递增子序列，递增子序列的长度至少是2。
+
+示例:
+
+输入: [4, 6, 7, 7]
+输出: [[4, 6], [4, 7], [4, 6, 7], [4, 6, 7, 7], [6, 7], [6, 7, 7], [7,7], [4,7,7]]
+说明:
+
+给定数组的长度不会超过15。
+数组中的整数范围是 [-100,100]。
+给定数组中可能包含重复数字，相等的数字应该被视为递增的一种情况。
+
+## 分析
+
+
+
+DFS中的path是怎么产生的？
+
+初始path=[]，它有4种选择。
+
+在选择了第0个元素后，它有后面的3种选择，继续选了3个里面的第一个元素之后，它有后面的2种选择，...；
+
+在选择了第1个元素后，它有后面的2种选择，继续选择了2个里面的第一个元素之后，他有后面的1种选择，...；
+
+这样形成path，一个一个的中间值。把中间值中符合条件的加入到result中，就是我们想要的结果。
+
+![image-20200825174241103](D:\workspace\GitBlog\算法和数据结构\images\image-20200825174241103.png)
+
+
+
+## 代码
+
+49 ms  beats 4%
+
+```java
+class Solution {
+    Set<List<Integer>> resultList = new LinkedHashSet<>();
+
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        List<Integer> path = new ArrayList<>();
+        dfs_findSubsequences(nums, 0, path);
+        System.out.println(resultList);
+        return new ArrayList<>(resultList);
+    }
+    public void dfs_findSubsequences(int[] nums, int idx, List<Integer> path){
+        if (path.size()>=2 && !resultList.contains(path)){
+//            resultList.add(path); //这种写法，错误！因为在Java中这是引用类型。
+            resultList.add(new ArrayList<>(path));
+        }
+        if (idx == nums.length){
+            return;
+        }
+
+        for (int i = idx; i < nums.length; i++) {
+            if (path.size()==0 || nums[i]>=path.get(path.size()-1)) {
+                path.add(nums[i]);
+                dfs_findSubsequences(nums, i + 1, path);
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+}
+```
+
+## 难点
+
++ <font color=red>DFS中，需要用for循环。（中间值有多种选择的都需要for循环）</font>
+
+  当idx=0时，把第0个元素加入到path中，然后对它后面的元素进行相同的操作。
+
+  当idx=1时，把第1个元素加入到path中，然后对它后面的元素进行相同的操作。
+
++ <font color=red>把某个元素加入到path中后，在对它后面的元素执行相同的操作完了之后，要把这个元素从path中取出来。这样才能退回到添加这个元素之前的状态，选择其它可选元素。</font>
+
++ 对于Java而言，List<>是引用对象，所以在把path加到result中的时候，不能使用resultList.add(path)，而应该基于path新建一个对象<font color=red>resultList.add(new ArrayList<>(path))</font>，这样才不会出错。
+
+
+
+## 优化
+
+去重版
+
+15ms beats 40%
+
+```java
+class Solution {
+    Set<List<Integer>> resultList = new LinkedHashSet<>();
+
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        List<Integer> path = new ArrayList<>();
+        dfs_findSubsequences(nums, 0, path);
+        // System.out.println(resultList);
+        return new ArrayList<>(resultList);
+    }
+    public void dfs_findSubsequences(int[] nums, int idx, List<Integer> path){
+        Set<Integer> set = new HashSet<>();
+
+        if (path.size()>=2 && !resultList.contains(path)){
+//            resultList.add(path); //这种写法，错误！因为在Java中这是引用类型。
+            resultList.add(new ArrayList<>(path));
+        }
+        if (idx == nums.length){
+            return;
+        }
+
+        for (int i = idx; i < nums.length; i++) {
+            if (set.contains(nums[i])) {
+                continue;
+            }
+            set.add(nums[i]);
+            if (path.size()==0 || nums[i]>=path.get(path.size()-1)) {
+                path.add(nums[i]);
+                dfs_findSubsequences(nums, i + 1, path);
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+}
+```
