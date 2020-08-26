@@ -82,7 +82,7 @@ DFS中的path是怎么产生的？
 
 这样形成path，一个一个的中间值。把中间值中符合条件的加入到result中，就是我们想要的结果。
 
-![image-20200825174241103](D:\workspace\GitBlog\算法和数据结构\images\image-20200825174241103.png)
+![image-20200825174241103](.\images\image-20200825174241103.png)
 
 
 
@@ -175,3 +175,82 @@ class Solution {
     }
 }
 ```
+
+# [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+![image-20200826095834740](.\images\image-20200826095834740.png)
+
+示例:
+
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+说明:
+尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+## 分析
+
++ <font color=red>DFS 画出树形图，标注上path就好做了。</font>
+
++ 仍旧是注意，当可选状态为多个的时候，你选择了一个元素之后对剩下的元素执行dfs，那么你执行完了之后要<font color=red>退回到之前的状态</font>。
+
+## 代码
+
+1ms beats 88%
+
+```java
+class Solution {
+    List<String> result_findSubsequences = new ArrayList<>();
+    public List<String> letterCombinations(String digits) {
+        HashMap<Integer, List<Character>> map = new HashMap<>();
+        map.put(2, Arrays.asList('a','b','c'));
+        map.put(3, Arrays.asList('d','e','f'));
+        map.put(4, Arrays.asList('g','h','i'));
+        map.put(5, Arrays.asList('j','k','l'));
+        map.put(6, Arrays.asList('m','n','o'));
+        map.put(7, Arrays.asList('p','q','r','s'));
+        map.put(8, Arrays.asList('t','u','v'));
+        map.put(9, Arrays.asList('w','x','y','z'));
+        if (digits.length()==0) return new ArrayList<>();
+        dfs_letterCombinations(digits, 0, new StringBuilder(), map);
+        return result_findSubsequences;
+    }
+    public void dfs_letterCombinations(String s, int idx, StringBuilder sb, HashMap<Integer, List<Character>> map){
+        if (idx==s.length()){
+            result_findSubsequences.add(sb.toString());
+            return;
+        }
+        int n = s.charAt(idx) - '0'; //数字
+        List<Character> list = map.get(n); //它的list
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i));
+            dfs_letterCombinations(s, idx+1, sb, map);
+            sb.deleteCharAt(sb.length()-1);
+        }
+    }
+}
+```
+
+
+
+## 难点
+
+无。dfs典型问题。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
