@@ -386,3 +386,56 @@ class Solution {
 
 <font color = red>出口是：到达叶子结点。</font>
 
+# [46. 全排列](https://leetcode-cn.com/problems/permutations/)
+
+给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+
+示例:
+
+> 输入: [1,2,3]
+> 输出:
+> [
+>   [1,2,3],
+>   [1,3,2],
+>   [2,1,3],
+>   [2,3,1],
+>   [3,1,2],
+>   [3,2,1]
+> ]
+
+## 分析
+
+dfs经典问题。
+
+需要用result保存全部的时候，注意保存现场，并在下一次的dfs之后，恢复状态。
+
+## 代码
+
+3ms beats 50%
+
+```java
+class Solution {
+    List<List<Integer>> result_permute = new ArrayList<>();
+    public List<List<Integer>> permute(int[] nums) {
+        List<Integer> path = new ArrayList<>();
+        dfs_permute(nums, path);
+        return result_permute;
+    }
+    public void dfs_permute(int[] nums, List<Integer> path){
+        if (path.size() == nums.length){
+            result_permute.add(path);
+            return;
+        }
+        for (int i = 0; i < nums.length ; i++) {
+            if (!path.contains(nums[i])){
+                path.add(nums[i]);
+                dfs_permute(nums, new ArrayList<>(path));
+                path.remove(path.size()-1);
+            }
+        }
+    }
+}
+```
+
+## 难点
+
